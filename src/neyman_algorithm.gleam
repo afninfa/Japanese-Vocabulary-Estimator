@@ -1,10 +1,11 @@
 import gleam/float
 import gleam/int
 import gleam/list
+import gleam/set
 
 pub type Bucket {
   Bucket(
-    words: List(String),
+    words: set.Set(String),
     successful_samples: Int,
     samples_so_far: Int,
     samples_todo: Int,
@@ -12,7 +13,8 @@ pub type Bucket {
 }
 
 pub fn new_bucket(words) {
-  let assert 750 = list.length(words)
+  let assert 750 = set.size(words)
+  // All strata have the same size
   Bucket(words, 0, 0, 0)
 }
 
@@ -52,16 +54,24 @@ fn standard_deviation(bucket: Bucket) -> Float {
 }
 
 fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
-  // Should not have any still unfinished
+  // Make sure we have enough sample budget
+  case budget > 2 * list.length(buckets) {
+    True -> panic as "Need to do at least twice as many samples as buckets"
+    False -> Nil
+  }
+  // Get size of the first bucket
+  let assert Ok(first_bucket) = list.first(buckets)
+  // Should not have any still unfinished. Buckets should all be the same size.
   buckets
-  |> list.each(fn(bucket) {
-    let assert 0 = bucket.samples_todo
+  |> list.each(fn(this_bucket) {
+    assert this_bucket.samples_todo == 0
+    assert set.size(first_bucket.words) == set.size(this_bucket.words)
   })
   // Sum standard deviations of all buckets
-  let assert Ok(sum_std_dev) =
+  let sum_std_dev =
     buckets
     |> list.map(standard_deviation)
-    |> list.reduce(fn(acc, x) { acc +. x })
+    |> float.sum
   // Fill with samples todo
   buckets
   |> list.map(fn(bucket) {
@@ -69,4 +79,27 @@ fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
       { standard_deviation(bucket) /. sum_std_dev } *. int.to_float(budget)
     Bucket(..bucket, samples_todo: float.round(samples_todo))
   })
+}
+
+fn margin_of_error(buckets: List(Bucket)) -> Int {
+  let sum_term =
+    buckets
+    |> list.map(fn(bucket) {
+      variance(bucket) /. int.to_float(bucket.samples_so_far)
+    })
+    |> float.sum
+
+  0
+}
+
+fn estimation(buckets: List(Bucket)) -> Int {
+  let corpus_size =
+    buckets |> list.map(fn(bucket) { set.size(bucket.words) }) |> int.sum
+  let total_correct =
+    buckets |> list.map(fn(bucket) { bucket.successful_samples }) |> int.sum
+  let total_sampled =
+    buckets |> list.map(fn(bucket) { bucket.samples_so_far }) |> int.sum
+  let proportion = int.to_float(total_correct) /. int.to_float(total_sampled)
+  let estimate = int.to_float(corpus_size) *. proportion
+  float.round(estimate)
 }
