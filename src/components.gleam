@@ -2,10 +2,12 @@ import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
-import types.{type Msg}
+import types.{type Msg, type Theme, Dark, Light}
 
 pub type Colour =
   String
+
+pub const white = "#ffffff"
 
 pub const green = "#22c55e"
 
@@ -17,9 +19,28 @@ pub const light_grey = "#64748b"
 
 pub const dark_grey = "#1e293b"
 
-pub fn stack(children: List(Element(Msg))) -> Element(Msg) {
+pub const black = "#000000"
+
+pub fn text_colour(theme) {
+  case theme {
+    Light -> black
+    Dark -> white
+  }
+}
+
+pub fn background_colour(theme) {
+  case theme {
+    Light -> light_grey
+    Dark -> dark_grey
+  }
+}
+
+pub fn stack(theme: Theme, children: List(Element(Msg))) -> Element(Msg) {
   html.div(
     [
+      attribute.style("position", "fixed"),
+      attribute.style("top", "0"),
+      attribute.style("left", "0"),
       attribute.style("display", "flex"),
       attribute.style("flex-direction", "column"),
       attribute.style("align-items", "center"),
@@ -27,6 +48,8 @@ pub fn stack(children: List(Element(Msg))) -> Element(Msg) {
       attribute.style("gap", "1.5rem"),
       attribute.style("height", "100vh"),
       attribute.style("width", "100%"),
+      attribute.style("background-color", background_colour(theme)),
+      attribute.style("transition", "background-color 0.3s ease"),
     ],
     children,
   )
@@ -61,13 +84,13 @@ pub fn button(label: String, colour: Colour, msg: Msg) -> Element(Msg) {
   )
 }
 
-pub fn text(content: String) -> Element(Msg) {
+pub fn text(theme: Theme, content: String) -> Element(Msg) {
   html.p(
     [
       attribute.style("font-size", "2.5rem"),
       attribute.style("font-weight", "600"),
       attribute.style("margin", "0"),
-      attribute.style("color", dark_grey),
+      attribute.style("color", text_colour(theme)),
     ],
     [html.text(content)],
   )
@@ -80,5 +103,20 @@ pub fn label(content: String, colour: Colour) -> Element(Msg) {
       attribute.style("font-weight", "500"),
     ],
     [html.text(content)],
+  )
+}
+
+pub fn options_bar(children: List(Element(Msg))) -> Element(Msg) {
+  html.div(
+    [
+      attribute.style("position", "absolute"),
+      attribute.style("top", "1.5rem"),
+      attribute.style("right", "1.5rem"),
+      attribute.style("display", "flex"),
+      attribute.style("flex-direction", "row-reverse"),
+      attribute.style("gap", "1rem"),
+      attribute.style("align-items", "start"),
+    ],
+    children,
   )
 }

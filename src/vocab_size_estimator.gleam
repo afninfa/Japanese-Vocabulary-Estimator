@@ -1,36 +1,45 @@
 import components as ui
 import gleam/int
+import gleam/option.{Some}
 import lustre
-import lustre/element.{type Element}
-import types.{type Model, type Msg} as t
+import types.{type Model, type Msg, Model} as t
 
 fn update(model: Model, msg: Msg) -> Model {
   case msg {
-    t.UserClickedIncrement -> model + 1
-    t.UserClickedDecrement -> model - 1
+    t.UserClickedIncrement -> Model(..model, counter: model.counter + 1)
+    t.UserClickedDecrement -> Model(..model, counter: model.counter - 1)
+    t.UserClickedThemeToggle ->
+      case model.theme {
+        t.Light -> Model(..model, theme: t.Dark)
+        t.Dark -> Model(..model, theme: t.Light)
+      }
   }
 }
 
 fn init(_args) -> Model {
-  0
+  Model(counter: 0, theme: t.Light)
 }
 
-fn view(model: Model) -> Element(Msg) {
-  let counter_repr = int.to_string(model)
+fn view(model: Model) {
+  let counter_repr = int.to_string(model.counter)
 
-  ui.stack([
+  ui.stack(model.theme, [
+    ui.options_bar([
+      ui.button("Change Theme", ui.light_grey, t.UserClickedThemeToggle),
+    ]),
+
     ui.row([
       ui.button("+", ui.green, t.UserClickedIncrement),
-      ui.text(counter_repr),
+      ui.text(model.theme, counter_repr),
       ui.button("-", ui.red, t.UserClickedDecrement),
     ]),
 
     ui.row([
-      ui.label("Status: Running", ui.dark_grey),
+      ui.label("Status: Running", ui.text_colour(model.theme)),
       ui.label("●", ui.green),
     ]),
 
-    ui.label("I am a simplified second row", ui.dark_grey),
+    ui.label("I am a simplified second row", ui.text_colour(model.theme)),
   ])
 }
 
