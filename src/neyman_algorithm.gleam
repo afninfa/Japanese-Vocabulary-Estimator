@@ -12,13 +12,20 @@ pub type Bucket {
   )
 }
 
+fn float_corpus_size(buckets: List(Bucket)) {
+  buckets
+  |> list.map(fn(bucket) { set.size(bucket.words) })
+  |> int.sum
+  |> int.to_float
+}
+
 pub fn new_bucket(words) {
   let assert 750 = set.size(words)
   // All strata have the same size
   Bucket(words, 0, 0, 0)
 }
 
-pub fn proportion(bucket: Bucket) {
+fn proportion(bucket: Bucket) {
   case bucket.samples_so_far {
     0 -> panic as "Cannot calculate proportion with zero samples"
     _ -> Nil
@@ -44,7 +51,10 @@ pub fn sample_word(bucket: Bucket, sample_successful: Bool) {
 }
 
 fn variance(bucket: Bucket) -> Float {
-  proportion(bucket) *. { 1.0 -. proportion(bucket) }
+  case bucket.samples_so_far {
+    0 -> 0.25
+    _ -> proportion(bucket) *. { 1.0 -. proportion(bucket) }
+  }
 }
 
 fn standard_deviation(bucket: Bucket) -> Float {
@@ -56,7 +66,7 @@ fn mean(nums: List(Float)) -> Float {
   { nums |> float.sum } /. { nums |> list.length |> int.to_float }
 }
 
-fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
+pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
   // Make sure we have enough sample budget
   case budget < 2 * list.length(buckets) {
     True -> panic as "Need to do at least twice as many samples as buckets"
@@ -79,11 +89,11 @@ fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
   |> list.map(fn(bucket) {
     let samples_todo =
       { standard_deviation(bucket) /. sum_std_dev } *. int.to_float(budget)
-    Bucket(..bucket, samples_todo: float.round(samples_todo))
+    Bucket(..bucket, samples_todo: float.round(samples_todo) + 1)
   })
 }
 
-fn margin_of_error(buckets: List(Bucket)) -> Int {
+pub fn margin_of_error(buckets: List(Bucket)) -> Int {
   // Buckets should all be the same size.
   let assert Ok(first_bucket) = list.first(buckets)
   buckets
@@ -100,20 +110,15 @@ fn margin_of_error(buckets: List(Bucket)) -> Int {
   let k = int.to_float(list.length(buckets))
   let strata_term = 1.0 /. { k *. k }
   let assert Ok(root_term) = float.square_root(sum_term *. strata_term)
-  let result = 1.96 *. root_term
+  let result = 1.96 *. root_term *. float_corpus_size(buckets)
   float.round(result)
 }
 
-fn estimation(buckets: List(Bucket)) -> Int {
-  let corpus_size: Float =
-    buckets
-    |> list.map(fn(bucket) { set.size(bucket.words) })
-    |> int.sum
-    |> int.to_float
+pub fn estimation(buckets: List(Bucket)) -> Int {
   let average_proportion =
     buckets
     |> list.map(proportion)
     |> mean
-  let estimate = corpus_size *. average_proportion
+  let estimate = float_corpus_size(buckets) *. average_proportion
   float.round(estimate)
 }
