@@ -1,10 +1,8 @@
 pub type Model {
-  Model(counter: Int, theme: Theme)
+  Model(theme: Theme)
 }
 
 pub type Msg {
-  UserClickedIncrement
-  UserClickedDecrement
   UserClickedThemeToggle
 }
 

@@ -15,7 +15,7 @@ pub const blue = "#3b82f6"
 
 pub const red = "#ef4444"
 
-pub const light_grey = "#64748b"
+pub const light_grey = "#9cafc9ff"
 
 pub const dark_grey = "#1e293b"
 
