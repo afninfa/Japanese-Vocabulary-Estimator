@@ -6,6 +6,8 @@ pub type Model {
 
 pub type Msg {
   UserClickedThemeToggle
+  UserClickedDontKnow
+  UserClickedKnow
 }
 
 pub type Theme {

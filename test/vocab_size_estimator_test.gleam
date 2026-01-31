@@ -17,11 +17,11 @@ pub fn hello_world_test() {
 
 pub fn neyman_initialisation_test() {
   let raw_buckets = [
-    new_bucket(set.from_list(["eat", "see", "go"])),
-    new_bucket(set.from_list(["brother", "friend", "book"])),
-    new_bucket(set.from_list(["school", "movie", "doctor"])),
-    new_bucket(set.from_list(["education", "phobia", "issue"])),
-    new_bucket(set.from_list(["arachnid", "cardiovascular", "economics"])),
+    new_bucket(set.from_list(["eat", "see", "go"]), 0),
+    new_bucket(set.from_list(["brother", "friend", "book"]), 1),
+    new_bucket(set.from_list(["school", "movie", "doctor"]), 2),
+    new_bucket(set.from_list(["education", "phobia", "issue"]), 3),
+    new_bucket(set.from_list(["arachnid", "vascular", "economics"]), 4),
   ]
   let initialised_buckets = neyman_allocation(raw_buckets, 10)
   initialised_buckets

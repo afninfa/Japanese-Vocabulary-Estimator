@@ -34,6 +34,13 @@ pub fn text_colour(theme) {
   }
 }
 
+pub fn adaptive_green(theme) {
+  case theme {
+    Light -> dark_green
+    Dark -> green
+  }
+}
+
 pub fn background_colour(theme) {
   case theme {
     Light -> light_grey
@@ -99,7 +106,7 @@ pub fn text(theme: Theme, content: String) -> Element(Msg) {
   html.p(
     [
       attribute.style("font-size", "2.5rem"),
-      attribute.style("font-weight", "600"),
+      attribute.style("font-weight", "500"),
       attribute.style("margin", "0"),
       attribute.style("color", text_colour(theme)),
     ],

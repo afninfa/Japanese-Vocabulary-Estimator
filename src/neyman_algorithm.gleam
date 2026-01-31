@@ -3,12 +3,16 @@ import gleam/int
 import gleam/list
 import gleam/set
 
+pub type BucketId =
+  Int
+
 pub type Bucket {
   Bucket(
     words: set.Set(String),
     successful_samples: Int,
     samples_so_far: Int,
     samples_todo: Int,
+    bucket_id: BucketId,
   )
 }
 
@@ -19,10 +23,10 @@ fn float_corpus_size(buckets: List(Bucket)) {
   |> int.to_float
 }
 
-pub fn new_bucket(words) {
+pub fn new_bucket(words, id) {
   assert set.size(words) == 3
   // All strata have the same size
-  Bucket(words, 0, 0, 0)
+  Bucket(words, 0, 0, 0, id)
 }
 
 fn proportion(bucket: Bucket) {
