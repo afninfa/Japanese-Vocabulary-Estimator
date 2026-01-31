@@ -21,12 +21,27 @@ pub type Theme {
   Dark
 }
 
+pub fn reduce_samples_todo_on_active_bucket_after_sample(model: Model) -> Model {
+  let updated_buckets =
+    model.buckets
+    |> list.map(fn(bucket) {
+      case bucket.bucket_id == model.active_bucket_id {
+        True ->
+          neyman_algorithm.Bucket(
+            ..bucket,
+            samples_todo: bucket.samples_todo - 1,
+          )
+        False -> bucket
+      }
+    })
+  Model(..model, buckets: updated_buckets)
+}
+
 pub fn update_active_bucket_id_after_sample(model: Model) -> Model {
   let active_bucket = get_active_bucket(model)
   let max_bucket_id = { model.buckets |> list.length } - 1
   let next_active_bucket_id = case active_bucket.samples_todo {
-    0 -> panic as "Active bucket has 0 samples todo, should be higher"
-    1 -> active_bucket.bucket_id + 1
+    0 -> active_bucket.bucket_id + 1
     _ -> active_bucket.bucket_id
   }
   case next_active_bucket_id > max_bucket_id {
