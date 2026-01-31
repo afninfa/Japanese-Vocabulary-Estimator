@@ -1,11 +1,12 @@
-import components as ui
 import gleam/int
 import gleam/list
 import gleam/option.{None, Some}
-import gleam/set
+import gleam/yielder
 import lustre
-import neyman_algorithm.{type Bucket, type BucketId, new_bucket}
-import types.{type Model, type Msg, Model} as t
+import model.{type Model, type Msg, Model} as t
+import neyman_algorithm.{type Bucket, new_bucket}
+import randomlib.{choice, new}
+import ui_utils as ui
 
 fn update(model: Model, msg: Msg) -> Model {
   case msg {
@@ -14,36 +15,46 @@ fn update(model: Model, msg: Msg) -> Model {
         t.Light -> Model(..model, theme: t.Dark)
         t.Dark -> Model(..model, theme: t.Light)
       }
-    t.UserClickedDontKnow -> model
-    t.UserClickedKnow -> model
+    t.UserClickedDontKnow ->
+      model
+      |> t.update_active_bucket_data_after_sample(False)
+      |> t.update_active_bucket_id_after_sample
+    t.UserClickedKnow ->
+      model
+      |> t.update_active_bucket_data_after_sample(True)
+      |> t.update_active_bucket_id_after_sample
   }
 }
 
+fn sample_from_bucket(bucket: Bucket) -> String {
+  let rng = new()
+  let assert Ok(random_words) = choice(rng, bucket.words)
+  let assert Ok(word) = random_words |> yielder.at(0)
+  word
+}
+
 fn init(_args) -> Model {
-  Model(
-    theme: t.Light,
-    buckets: neyman_algorithm.neyman_allocation(
+  let buckets =
+    neyman_algorithm.neyman_allocation(
       [
-        new_bucket(set.from_list(["eat", "see", "go"]), 0),
-        new_bucket(set.from_list(["brother", "friend", "book"]), 1),
-        new_bucket(set.from_list(["school", "movie", "doctor"]), 2),
-        new_bucket(set.from_list(["education", "phobia", "issue"]), 3),
-        new_bucket(set.from_list(["arachnid", "vascular", "economics"]), 4),
+        new_bucket(["eat", "see", "go"], 0),
+        new_bucket(["brother", "friend", "book"], 1),
+        new_bucket(["school", "movie", "doctor"], 2),
+        new_bucket(["education", "phobia", "issue"], 3),
+        new_bucket(["arachnid", "vascular", "economics"], 4),
       ],
       16,
-    ),
+    )
+  let assert Ok(first_bucket) = list.first(buckets)
+  Model(
+    theme: t.Light,
+    buckets: buckets,
+    current_word: sample_from_bucket(first_bucket),
+    active_bucket_id: 0,
   )
 }
 
-fn find_selected_bucket(buckets: List(Bucket)) -> BucketId {
-  let assert Ok(selected_bucket) =
-    buckets
-    |> list.find(fn(bucket) { bucket.samples_todo > 0 })
-  selected_bucket.bucket_id
-}
-
 fn view(model: Model) {
-  let selected_bucket_id = find_selected_bucket(model.buckets)
   ui.stack(model.theme, [
     ui.options_bar([
       ui.button(
@@ -67,6 +78,16 @@ fn view(model: Model) {
       ),
     ]),
 
+    ui.row([
+      ui.label(
+        "Estimate: "
+          <> int.to_string(neyman_algorithm.estimation(model.buckets))
+          <> " Margin of error: "
+          <> int.to_string(neyman_algorithm.margin_of_error(model.buckets)),
+        ui.text_colour(model.theme),
+      ),
+    ]),
+
     ui.row(
       model.buckets
       |> list.map(fn(bucket) {
@@ -75,12 +96,12 @@ fn view(model: Model) {
           bucket.successful_samples,
           bucket.samples_so_far,
           "Questions: " <> int.to_string(bucket.samples_todo),
-          bucket.bucket_id == selected_bucket_id,
+          bucket.bucket_id == model.active_bucket_id,
         )
       }),
     ),
 
-    ui.row([ui.text(model.theme, "The word...")]),
+    ui.row([ui.text(model.theme, model.current_word)]),
 
     ui.row([
       ui.button(model.theme, "Don't know", ui.red, t.UserClickedDontKnow),

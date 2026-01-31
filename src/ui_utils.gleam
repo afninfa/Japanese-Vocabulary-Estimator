@@ -6,7 +6,7 @@ import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
-import types.{type Msg, type Theme, Dark, Light}
+import model.{type Msg, type Theme, Dark, Light}
 
 pub type Colour =
   String

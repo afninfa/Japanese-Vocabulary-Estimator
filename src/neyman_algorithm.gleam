@@ -1,43 +1,50 @@
 import gleam/float
 import gleam/int
 import gleam/list
-import gleam/set
 
 pub type BucketId =
   Int
 
 pub type Bucket {
   Bucket(
-    words: set.Set(String),
+    words: List(String),
     successful_samples: Int,
     samples_so_far: Int,
     samples_todo: Int,
     bucket_id: BucketId,
+    // Index within model.bucket_list, will be asserted
   )
 }
 
 fn float_corpus_size(buckets: List(Bucket)) {
   buckets
-  |> list.map(fn(bucket) { set.size(bucket.words) })
+  |> list.map(fn(bucket) { list.length(bucket.words) })
   |> int.sum
   |> int.to_float
 }
 
 pub fn new_bucket(words, id) {
-  assert set.size(words) == 3
-  // All strata have the same size
   Bucket(words, 0, 0, 0, id)
+}
+
+pub fn verify_bucket_ids(buckets: List(Bucket)) -> Nil {
+  buckets
+  |> list.index_map(fn(bucket, index) {
+    assert bucket.bucket_id == index
+  })
+  Nil
 }
 
 fn proportion(bucket: Bucket) {
   case bucket.samples_so_far {
-    0 -> panic as "Cannot calculate proportion with zero samples"
-    _ -> Nil
+    0 -> 0.0
+    _ ->
+      int.to_float(bucket.successful_samples)
+      /. int.to_float(bucket.samples_so_far)
   }
-  int.to_float(bucket.successful_samples) /. int.to_float(bucket.samples_so_far)
 }
 
-pub fn sample_word(bucket: Bucket, sample_successful: Bool) {
+pub fn process_sample_result(bucket: Bucket, sample_successful: Bool) -> Bucket {
   case bucket.samples_todo {
     0 -> panic as "Tried to sample on a bucket with zero samples todo"
     _ -> Nil
@@ -81,8 +88,10 @@ pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
   buckets
   |> list.each(fn(this_bucket) {
     assert this_bucket.samples_todo == 0
-    assert set.size(first_bucket.words) == set.size(this_bucket.words)
+    assert list.length(first_bucket.words) == list.length(this_bucket.words)
   })
+  // Bucket IDs should match list index
+  verify_bucket_ids(buckets)
   // Sum standard deviations of all buckets
   let sum_std_dev =
     buckets
@@ -102,7 +111,7 @@ pub fn margin_of_error(buckets: List(Bucket)) -> Int {
   let assert Ok(first_bucket) = list.first(buckets)
   buckets
   |> list.each(fn(this_bucket) {
-    assert set.size(first_bucket.words) == set.size(this_bucket.words)
+    assert list.length(first_bucket.words) == list.length(this_bucket.words)
   })
   let sum_term =
     buckets
