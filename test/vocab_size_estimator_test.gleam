@@ -27,15 +27,18 @@ pub fn neyman_initialisation_test() {
   initialised_buckets
   |> list.each(fn(bucket) {
     assert bucket.samples_todo == 3
+    // 2 from the budget of 10 plus 1
   })
   let initialised_buckets = neyman_allocation(raw_buckets, 15)
   initialised_buckets
   |> list.each(fn(bucket) {
     assert bucket.samples_todo == 4
+    // 3 from the budget of 15 plus 1
   })
   let initialised_buckets = neyman_allocation(raw_buckets, 20)
   initialised_buckets
   |> list.each(fn(bucket) {
     assert bucket.samples_todo == 5
+    // 4 from the budget of 20 plus 1
   })
 }
