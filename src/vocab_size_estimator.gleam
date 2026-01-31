@@ -2,7 +2,6 @@ import components as ui
 import gleam/int
 import gleam/list
 import gleam/set
-import gleam/string
 import lustre
 import neyman_algorithm.{type Bucket, new_bucket}
 import types.{type Model, type Msg, Model} as t
@@ -18,13 +17,34 @@ fn update(model: Model, msg: Msg) -> Model {
 }
 
 fn init(_args) -> Model {
-  Model(theme: t.Light, buckets: [
-    new_bucket(set.from_list(["eat", "see", "go"])),
-    new_bucket(set.from_list(["school", "movie", "doctor"])),
-    new_bucket(set.from_list(["education", "phobia", "issue"])),
-    new_bucket(set.from_list(["arachnid", "cardiovascular", "economics"])),
-  ])
+  Model(
+    theme: t.Light,
+    buckets: neyman_algorithm.neyman_allocation(
+      [
+        new_bucket(set.from_list(["eat", "see", "go"])),
+        new_bucket(set.from_list(["brother", "friend", "book"])),
+        new_bucket(set.from_list(["school", "movie", "doctor"])),
+        new_bucket(set.from_list(["education", "phobia", "issue"])),
+        new_bucket(set.from_list(["arachnid", "cardiovascular", "economics"])),
+      ],
+      16,
+    ),
+  )
 }
+
+// fn find_selected_bucket(model: Model) -> #(Model, Bucket) {
+//   let selected_bucket =
+//     model.buckets
+//     |> list.find(fn(bucket) { bucket.samples_todo > 0 })
+//   case selected_bucket {
+//     Ok(bucket) -> #(model, bucket)
+//     _ -> {
+//       let new_buckets = neyman_algorithm.neyman_allocation(model.buckets, 16)
+//       let new_model = Model(..model, buckets: new_buckets)
+//       find_selected_bucket(new_model)
+//     }
+//   }
+// }
 
 fn view(model: Model) {
   ui.stack(model.theme, [

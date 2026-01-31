@@ -84,7 +84,7 @@ pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
     buckets
     |> list.map(standard_deviation)
     |> float.sum
-  // Fill with samples todo
+  // Allocate samples from budget
   buckets
   |> list.map(fn(bucket) {
     let samples_todo =
