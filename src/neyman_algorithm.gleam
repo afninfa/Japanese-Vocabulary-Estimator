@@ -20,7 +20,7 @@ fn float_corpus_size(buckets: List(Bucket)) {
 }
 
 pub fn new_bucket(words) {
-  let assert 750 = set.size(words)
+  assert set.size(words) == 3
   // All strata have the same size
   Bucket(words, 0, 0, 0)
 }
