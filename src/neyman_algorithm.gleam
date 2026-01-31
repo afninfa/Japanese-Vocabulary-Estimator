@@ -24,7 +24,7 @@ fn float_corpus_size(buckets: List(Bucket)) {
 }
 
 pub fn new_bucket(words, id) {
-  Bucket(words, 0, 0, 0, id)
+  Bucket(words, 0, 0, 5, id) // Start every bucket with 5 samples todo
 }
 
 pub fn verify_bucket_ids(buckets: List(Bucket)) -> Nil {
