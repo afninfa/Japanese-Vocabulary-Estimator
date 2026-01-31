@@ -1,5 +1,7 @@
 import gleam/list
+import gleam/yielder
 import neyman_algorithm.{type Bucket, type BucketId}
+import randomlib.{choice, new}
 
 pub type Model {
   Model(
@@ -19,6 +21,13 @@ pub type Msg {
 pub type Theme {
   Light
   Dark
+}
+
+pub fn sample_from_bucket(bucket: Bucket) -> String {
+  let rng = new()
+  let assert Ok(random_words) = choice(rng, bucket.words)
+  let assert Ok(word) = random_words |> yielder.at(0)
+  word
 }
 
 pub fn reduce_samples_todo_on_active_bucket_after_sample(model: Model) -> Model {
@@ -70,6 +79,10 @@ pub fn update_active_bucket_data_after_sample(
       }
     })
   Model(..model, buckets: updated_buckets)
+}
+
+pub fn update_currently_showing_word_after_sample(model: Model) -> Model {
+  Model(..model, current_word: model |> get_active_bucket |> sample_from_bucket)
 }
 
 pub fn get_active_bucket(model: Model) -> Bucket {

@@ -1,11 +1,9 @@
 import gleam/int
 import gleam/list
 import gleam/option.{None, Some}
-import gleam/yielder
 import lustre
 import model.{type Model, type Msg, Model} as t
 import neyman_algorithm.{type Bucket, new_bucket}
-import randomlib.{choice, new}
 import ui_utils as ui
 
 fn update(model: Model, msg: Msg) -> Model {
@@ -19,18 +17,13 @@ fn update(model: Model, msg: Msg) -> Model {
       model
       |> t.update_active_bucket_data_after_sample(False)
       |> t.update_active_bucket_id_after_sample
+      |> t.update_currently_showing_word_after_sample
     t.UserClickedKnow ->
       model
       |> t.update_active_bucket_data_after_sample(True)
       |> t.update_active_bucket_id_after_sample
+      |> t.update_currently_showing_word_after_sample
   }
-}
-
-fn sample_from_bucket(bucket: Bucket) -> String {
-  let rng = new()
-  let assert Ok(random_words) = choice(rng, bucket.words)
-  let assert Ok(word) = random_words |> yielder.at(0)
-  word
 }
 
 fn init(_args) -> Model {
@@ -49,7 +42,7 @@ fn init(_args) -> Model {
   Model(
     theme: t.Light,
     buckets: buckets,
-    current_word: sample_from_bucket(first_bucket),
+    current_word: t.sample_from_bucket(first_bucket),
     active_bucket_id: 0,
   )
 }
