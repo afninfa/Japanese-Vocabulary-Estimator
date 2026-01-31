@@ -1,5 +1,7 @@
 import gleam/float
 import gleam/int
+import gleam/list
+import gleam/option.{type Option, None, Some}
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
@@ -119,8 +121,42 @@ pub fn label(content: String, colour: Colour) -> Element(Msg) {
     [
       attribute.style("color", colour),
       attribute.style("font-weight", "500"),
+      attribute.style("line-height", "1"),
     ],
     [html.text(content)],
+  )
+}
+
+pub fn link(content: String, url: String, colour: Colour) -> Element(Msg) {
+  html.a(
+    [
+      attribute.href(url),
+      attribute.target("_blank"),
+      attribute.style("color", colour),
+      attribute.style("font-weight", "500"),
+      attribute.style("text-decoration", "underline"),
+      attribute.style("cursor", "pointer"),
+      attribute.style("line-height", "1"),
+    ],
+    [html.text(content)],
+  )
+}
+
+pub fn text_with_link(
+  parts: List(#(String, Option(#(String, Colour)))),
+  text_colour: Colour,
+) -> Element(Msg) {
+  html.span(
+    [
+      attribute.style("line-height", "1"),
+      attribute.style("color", text_colour),
+    ],
+    list.map(parts, fn(part) {
+      case part.1 {
+        Some(#(url, colour)) -> link(part.0, url, colour)
+        None -> html.text(part.0)
+      }
+    }),
   )
 }
 
@@ -133,7 +169,7 @@ pub fn options_bar(children: List(Element(Msg))) -> Element(Msg) {
       attribute.style("display", "flex"),
       attribute.style("flex-direction", "row-reverse"),
       attribute.style("gap", "1rem"),
-      attribute.style("align-items", "start"),
+      attribute.style("align-items", "center"),
     ],
     children,
   )

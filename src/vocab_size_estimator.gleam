@@ -1,6 +1,7 @@
 import components as ui
 import gleam/int
 import gleam/list
+import gleam/option.{None, Some}
 import gleam/set
 import lustre
 import neyman_algorithm.{type Bucket, type BucketId, new_bucket}
@@ -51,7 +52,19 @@ fn view(model: Model) {
         ui.background_colour(model.theme),
         t.UserClickedThemeToggle,
       ),
-      ui.label("Source code available at aaaaa", ui.text_colour(model.theme)),
+      ui.text_with_link(
+        [
+          #("Source code on ", None),
+          #(
+            "GitHub",
+            Some(#(
+              "https://github.com/afninfa/Japanese-Vocabulary-Estimator",
+              ui.blue,
+            )),
+          ),
+        ],
+        ui.text_colour(model.theme),
+      ),
     ]),
 
     ui.row(
