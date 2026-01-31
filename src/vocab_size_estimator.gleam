@@ -20,7 +20,8 @@ fn view(model: Model) {
   ui.stack(model.theme, [
     ui.options_bar([
       ui.button(
-        "Change Theme",
+        model.theme,
+        "Colour Theme",
         ui.background_colour(model.theme),
         t.UserClickedThemeToggle,
       ),
@@ -29,8 +30,14 @@ fn view(model: Model) {
     ui.row([ui.text(model.theme, "Coming soon")]),
 
     ui.row([
-      ui.label("Status: Running", ui.text_colour(model.theme)),
-      ui.label("●", ui.green),
+      ui.fraction_box(model.theme, 0, 0, "Hello, world!", False),
+      ui.fraction_box(model.theme, 1, 3, "Hello, world!", False),
+      ui.fraction_box(model.theme, 1, 4, "Hello, world!", False),
+      ui.fraction_box(model.theme, 4, 5, "Hello, world!", True),
+      ui.fraction_box(model.theme, 5, 6, "Hello, world!", False),
+      ui.fraction_box(model.theme, 2, 7, "Hello, world!", False),
+      ui.fraction_box(model.theme, 3, 8, "Hello, world!", False),
+      ui.fraction_box(model.theme, 4, 9, "Hello, world!", False),
     ]),
 
     ui.label("I am a simplified second row", ui.text_colour(model.theme)),
