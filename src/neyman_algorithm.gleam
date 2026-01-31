@@ -63,7 +63,7 @@ pub fn process_sample_result(bucket: Bucket, sample_successful: Bool) -> Bucket 
 
 fn variance(bucket: Bucket) -> Float {
   case bucket.samples_so_far {
-    0 -> 0.25
+    0 -> 0.0
     _ -> proportion(bucket) *. { 1.0 -. proportion(bucket) }
   }
 }

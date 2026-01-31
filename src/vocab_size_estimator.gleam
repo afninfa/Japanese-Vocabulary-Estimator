@@ -3,7 +3,7 @@ import gleam/list
 import gleam/option.{None, Some}
 import lustre
 import model.{type Model, type Msg, Model} as t
-import neyman_algorithm.{type Bucket, new_bucket}
+import neyman_algorithm.{new_bucket}
 import ui_utils as ui
 
 fn update(model: Model, msg: Msg) -> Model {
