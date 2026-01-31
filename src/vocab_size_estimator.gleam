@@ -3,7 +3,7 @@ import gleam/int
 import gleam/list
 import gleam/set
 import lustre
-import neyman_algorithm.{type Bucket, new_bucket}
+import neyman_algorithm.{new_bucket}
 import types.{type Model, type Msg, Model} as t
 
 fn update(model: Model, msg: Msg) -> Model {
@@ -71,8 +71,6 @@ fn view(model: Model) {
         )
       }),
     ),
-
-    ui.label("I am a simplified second row", ui.text_colour(model.theme)),
   ])
 }
 
