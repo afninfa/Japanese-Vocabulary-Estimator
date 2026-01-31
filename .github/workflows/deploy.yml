@@ -29,6 +29,16 @@ jobs:
         run: gleam run -m lustre/dev build --minify --outdir=dist
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Show dist contents (debug)
+        run: |
+          echo "dist listing:"
+          ls -la dist
+          echo "index.html head:"
+          sed -n '1,40p' dist/index.html
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
