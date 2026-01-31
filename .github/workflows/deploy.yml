@@ -26,7 +26,9 @@ jobs:
       - name: Install dependencies
         run: gleam deps download
       - name: Build app
-        run: gleam run -m lustre/dev build --minify --outdir=dist
+        run: |
+          gleam run -m lustre/dev build --minify --outdir=dist
+          sed -i 's/src="\/vocab_size_estimator.js"/src="vocab_size_estimator.js"/g' dist/index.html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
