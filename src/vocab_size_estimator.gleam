@@ -29,20 +29,16 @@ fn update(model: Model, msg: Msg) -> Model {
 }
 
 fn init(_args) -> Model {
-  let buckets =
-    neyman_algorithm.neyman_allocation(
-      [
-        lists.first_1000 |> string.split("\n") |> new_bucket(0),
-        lists.second_1000 |> string.split("\n") |> new_bucket(1),
-        lists.third_1000 |> string.split("\n") |> new_bucket(2),
-        lists.fourth_1000 |> string.split("\n") |> new_bucket(3),
-        lists.fifth_1000 |> string.split("\n") |> new_bucket(4),
-        lists.sixth_1000 |> string.split("\n") |> new_bucket(5),
-        lists.seventh_1000 |> string.split("\n") |> new_bucket(6),
-        lists.eighth_1000 |> string.split("\n") |> new_bucket(7),
-      ],
-      16,
-    )
+  let buckets = [
+    lists.first_1000 |> string.split("\n") |> new_bucket(0),
+    lists.second_1000 |> string.split("\n") |> new_bucket(1),
+    lists.third_1000 |> string.split("\n") |> new_bucket(2),
+    lists.fourth_1000 |> string.split("\n") |> new_bucket(3),
+    lists.fifth_1000 |> string.split("\n") |> new_bucket(4),
+    lists.sixth_1000 |> string.split("\n") |> new_bucket(5),
+    lists.seventh_1000 |> string.split("\n") |> new_bucket(6),
+    lists.eighth_1000 |> string.split("\n") |> new_bucket(7),
+  ]
   let assert Ok(first_bucket) = list.first(buckets)
   Model(
     theme: t.Light,
