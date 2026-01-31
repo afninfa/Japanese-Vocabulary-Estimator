@@ -24,7 +24,7 @@ fn float_corpus_size(buckets: List(Bucket)) {
 }
 
 pub fn new_bucket(words, id) {
-  Bucket(words, 0, 0, 5, id) // Start every bucket with 5 samples todo
+  Bucket(words, 0, 0, 0, id)
 }
 
 pub fn verify_bucket_ids(buckets: List(Bucket)) -> Nil {
@@ -70,11 +70,16 @@ fn variance(bucket: Bucket) -> Float {
 
 fn standard_deviation(bucket: Bucket) -> Float {
   let assert Ok(result) = bucket |> variance |> float.square_root
+    as "Negative number passed into square root when calculating standard deviation"
   result
 }
 
 fn mean(nums: List(Float)) -> Float {
   { nums |> float.sum } /. { nums |> list.length |> int.to_float }
+}
+
+pub fn simple_allocation(buckets: List(Bucket)) -> List(Bucket) {
+  buckets |> list.map(fn(bucket) { Bucket(..bucket, samples_todo: 5) })
 }
 
 pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
@@ -84,6 +89,7 @@ pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
     False -> Nil
   }
   let assert Ok(first_bucket) = list.first(buckets)
+    as "In Neyman allocation algorithm, attempted to get first bucket but the list was empty"
   // Should not have any still unfinished. Buckets should all be the same size.
   buckets
   |> list.each(fn(this_bucket) {
@@ -109,6 +115,7 @@ pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
 pub fn margin_of_error(buckets: List(Bucket)) -> Int {
   // Buckets should all be the same size.
   let assert Ok(first_bucket) = list.first(buckets)
+    as "In margin of error calculation, attempted to get first bucket but the list was empty"
   buckets
   |> list.each(fn(this_bucket) {
     assert list.length(first_bucket.words) == list.length(this_bucket.words)
@@ -123,6 +130,7 @@ pub fn margin_of_error(buckets: List(Bucket)) -> Int {
   let k = int.to_float(list.length(buckets))
   let strata_term = 1.0 /. { k *. k }
   let assert Ok(root_term) = float.square_root(sum_term *. strata_term)
+    as "Negative number passed into square root in margin of error formula"
   let result = 1.96 *. root_term *. float_corpus_size(buckets)
   float.round(result)
 }

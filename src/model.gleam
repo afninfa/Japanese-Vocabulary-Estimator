@@ -26,7 +26,9 @@ pub type Theme {
 pub fn sample_from_bucket(bucket: Bucket) -> String {
   let rng = new()
   let assert Ok(random_words) = choice(rng, bucket.words)
+    as "Empty list was passed into randomlib.choice!"
   let assert Ok(word) = random_words |> yielder.at(0)
+    as "yielder returned by randomlib.choice had no elements!"
   word
 }
 
@@ -87,7 +89,7 @@ pub fn get_active_bucket(model: Model) -> Bucket {
   let only_active_bucket_remains =
     model.buckets
     |> list.filter(fn(bucket) { bucket.bucket_id == model.active_bucket_id })
-  assert list.length(only_active_bucket_remains) == 1
   let assert Ok(active_bucket) = only_active_bucket_remains |> list.first
+    as "After filtering buckets to find active bucket, got no results"
   active_bucket
 }

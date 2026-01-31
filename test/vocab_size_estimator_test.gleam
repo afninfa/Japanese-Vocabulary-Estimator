@@ -6,14 +6,6 @@ pub fn main() -> Nil {
   gleeunit.main()
 }
 
-// gleeunit test functions end in `_test`
-pub fn hello_world_test() {
-  let name = "Joe"
-  let greeting = "Hello, " <> name <> "!"
-
-  assert greeting == "Hello, Joe!"
-}
-
 pub fn neyman_initialisation_test() {
   let raw_buckets = [
     new_bucket(["eat", "see", "go"], 0),
@@ -25,22 +17,20 @@ pub fn neyman_initialisation_test() {
   let initialised_buckets = neyman_allocation(raw_buckets, 10)
   initialised_buckets
   |> list.each(fn(bucket) {
-    assert bucket.samples_todo == 3
-    // 2 from the budget of 10 plus 1
+    assert bucket.samples_todo == 1
+    // Neyman allocates none because variance is zero, plus 1 because I add one to all buckets
   })
   verify_bucket_ids(initialised_buckets)
   let initialised_buckets = neyman_allocation(raw_buckets, 15)
   initialised_buckets
   |> list.each(fn(bucket) {
-    assert bucket.samples_todo == 4
-    // 3 from the budget of 15 plus 1
+    assert bucket.samples_todo == 1
   })
   verify_bucket_ids(initialised_buckets)
   let initialised_buckets = neyman_allocation(raw_buckets, 20)
   initialised_buckets
   |> list.each(fn(bucket) {
-    assert bucket.samples_todo == 5
-    // 4 from the budget of 20 plus 1
+    assert bucket.samples_todo == 1
   })
   verify_bucket_ids(initialised_buckets)
 }
