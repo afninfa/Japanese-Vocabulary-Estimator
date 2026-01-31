@@ -1,6 +1,8 @@
 import gleam/int
 import gleam/list
 import gleam/option.{None, Some}
+import gleam/string
+import lists
 import lustre
 import model.{type Model, type Msg, Model} as t
 import neyman_algorithm.{new_bucket}
@@ -30,11 +32,14 @@ fn init(_args) -> Model {
   let buckets =
     neyman_algorithm.neyman_allocation(
       [
-        new_bucket(["eat", "see", "go"], 0),
-        new_bucket(["brother", "friend", "book"], 1),
-        new_bucket(["school", "movie", "doctor"], 2),
-        new_bucket(["education", "phobia", "issue"], 3),
-        new_bucket(["arachnid", "vascular", "economics"], 4),
+        lists.first_1000 |> string.split("\n") |> new_bucket(0),
+        lists.second_1000 |> string.split("\n") |> new_bucket(1),
+        lists.third_1000 |> string.split("\n") |> new_bucket(2),
+        lists.fourth_1000 |> string.split("\n") |> new_bucket(3),
+        lists.fifth_1000 |> string.split("\n") |> new_bucket(4),
+        lists.sixth_1000 |> string.split("\n") |> new_bucket(5),
+        lists.seventh_1000 |> string.split("\n") |> new_bucket(6),
+        lists.eighth_1000 |> string.split("\n") |> new_bucket(7),
       ],
       16,
     )
@@ -74,8 +79,14 @@ fn view(model: Model) {
     ui.row([
       ui.label(
         "Estimate: "
-          <> int.to_string(neyman_algorithm.estimation(model.buckets))
-          <> " Margin of error: "
+          <> int.to_string(neyman_algorithm.estimation(model.buckets)),
+        ui.text_colour(model.theme),
+      ),
+    ]),
+
+    ui.row([
+      ui.label(
+        "Margin of error: "
           <> int.to_string(neyman_algorithm.margin_of_error(model.buckets)),
         ui.text_colour(model.theme),
       ),
@@ -88,7 +99,7 @@ fn view(model: Model) {
           model.theme,
           bucket.successful_samples,
           bucket.samples_so_far,
-          "Questions: " <> int.to_string(bucket.samples_todo),
+          int.to_string(bucket.samples_todo),
           bucket.bucket_id == model.active_bucket_id,
         )
       }),
