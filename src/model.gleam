@@ -30,20 +30,25 @@ pub fn sample_from_bucket(bucket: Bucket) -> String {
   word
 }
 
-pub fn reduce_samples_todo_on_active_bucket_after_sample(model: Model) -> Model {
+pub fn modify_active_bucket(
+  model: Model,
+  modifier: fn(Bucket) -> Bucket,
+) -> Model {
   let updated_buckets =
     model.buckets
     |> list.map(fn(bucket) {
       case bucket.bucket_id == model.active_bucket_id {
-        True ->
-          neyman_algorithm.Bucket(
-            ..bucket,
-            samples_todo: bucket.samples_todo - 1,
-          )
+        True -> modifier(bucket)
         False -> bucket
       }
     })
   Model(..model, buckets: updated_buckets)
+}
+
+pub fn reduce_samples_todo_on_active_bucket_after_sample(model: Model) -> Model {
+  modify_active_bucket(model, fn(bucket) {
+    neyman_algorithm.Bucket(..bucket, samples_todo: bucket.samples_todo - 1)
+  })
 }
 
 pub fn update_active_bucket_id_after_sample(model: Model) -> Model {
@@ -69,16 +74,9 @@ pub fn update_active_bucket_data_after_sample(
   model: Model,
   sample_successful: Bool,
 ) -> Model {
-  let updated_buckets =
-    model.buckets
-    |> list.map(fn(bucket) {
-      case bucket.bucket_id == model.active_bucket_id {
-        True ->
-          neyman_algorithm.process_sample_result(bucket, sample_successful)
-        False -> bucket
-      }
-    })
-  Model(..model, buckets: updated_buckets)
+  modify_active_bucket(model, fn(bucket) {
+    neyman_algorithm.process_sample_result(bucket, sample_successful)
+  })
 }
 
 pub fn update_currently_showing_word_after_sample(model: Model) -> Model {
