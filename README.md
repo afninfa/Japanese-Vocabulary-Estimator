@@ -2,5 +2,4 @@
 
 Estimate how many Japanese words you know with a margin of error.
 
-Uses the vocabulary from the Core 2k/6k Anki deck, downloaded from the URL in this LivaKivi video description https://youtu.be/husCWKdxiRI.
-
+Using the top 8000 words from the CSV file downloaded straight from https://github.com/Kuuuube/yomitan-dictionaries. Some are not real words (for example "んだ" is in the list) but I've intentionally left it untouched.
