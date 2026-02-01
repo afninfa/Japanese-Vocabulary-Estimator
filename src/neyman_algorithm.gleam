@@ -79,7 +79,7 @@ fn mean(nums: List(Float)) -> Float {
 }
 
 pub fn simple_allocation(buckets: List(Bucket)) -> List(Bucket) {
-  buckets |> list.map(fn(bucket) { Bucket(..bucket, samples_todo: 5) })
+  buckets |> list.map(fn(bucket) { Bucket(..bucket, samples_todo: 2) })
 }
 
 pub fn neyman_allocation(buckets: List(Bucket), budget: Int) -> List(Bucket) {
