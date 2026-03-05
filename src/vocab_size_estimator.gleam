@@ -31,14 +31,17 @@ fn update(model: Model, msg: Msg) -> Model {
 fn init(_args) -> Model {
   let buckets =
     neyman_algorithm.simple_allocation([
-      lists.first_1000 |> string.split("\n") |> new_bucket(0),
-      lists.second_1000 |> string.split("\n") |> new_bucket(1),
-      lists.third_1000 |> string.split("\n") |> new_bucket(2),
-      lists.fourth_1000 |> string.split("\n") |> new_bucket(3),
-      lists.fifth_1000 |> string.split("\n") |> new_bucket(4),
-      lists.sixth_1000 |> string.split("\n") |> new_bucket(5),
-      lists.seventh_1000 |> string.split("\n") |> new_bucket(6),
-      lists.eighth_1000 |> string.split("\n") |> new_bucket(7),
+      lists.first_361 |> string.split("\n") |> new_bucket(0),
+      lists.second_361 |> string.split("\n") |> new_bucket(1),
+      lists.third_361 |> string.split("\n") |> new_bucket(2),
+      lists.fourth_361 |> string.split("\n") |> new_bucket(3),
+      lists.fifth_361 |> string.split("\n") |> new_bucket(4),
+      lists.sixth_361 |> string.split("\n") |> new_bucket(5),
+      lists.seventh_361 |> string.split("\n") |> new_bucket(6),
+      lists.eighth_361 |> string.split("\n") |> new_bucket(7),
+      lists.ninth_361 |> string.split("\n") |> new_bucket(8),
+      lists.tenth_361 |> string.split("\n") |> new_bucket(9),
+      lists.eleventh_361 |> string.split("\n") |> new_bucket(10)
     ])
   let assert Ok(first_bucket) = list.first(buckets)
     as "Tried to get first bucket from list of buckets in init function but the list was empty"
@@ -76,8 +79,8 @@ fn view(model: Model) {
 
     ui.row([
       ui.label(
-        "Estimate: "
-          <> int.to_string(neyman_algorithm.estimation(model.buckets)),
+        "Estimate: you know "
+          <> int.to_string(neyman_algorithm.estimation(model.buckets)) <> "% of the words in my Anki deck",
         ui.text_colour(model.theme),
       ),
     ]),

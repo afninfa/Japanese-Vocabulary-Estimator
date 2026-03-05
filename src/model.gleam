@@ -65,7 +65,7 @@ pub fn update_active_bucket_id_after_sample(model: Model) -> Model {
       Model(
         ..model,
         active_bucket_id: 0,
-        buckets: neyman_algorithm.neyman_allocation(model.buckets, 16),
+        buckets: neyman_algorithm.neyman_allocation(model.buckets, 22),
       )
     }
     False -> Model(..model, active_bucket_id: next_active_bucket_id)

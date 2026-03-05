@@ -140,6 +140,6 @@ pub fn estimation(buckets: List(Bucket)) -> Int {
     buckets
     |> list.map(proportion)
     |> mean
-  let estimate = float_corpus_size(buckets) *. average_proportion
+  let estimate = 100.0 *. average_proportion
   float.round(estimate)
 }
