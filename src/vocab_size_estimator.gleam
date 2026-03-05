@@ -41,7 +41,7 @@ fn init(_args) -> Model {
       lists.eighth_361 |> string.split("\n") |> new_bucket(7),
       lists.ninth_361 |> string.split("\n") |> new_bucket(8),
       lists.tenth_361 |> string.split("\n") |> new_bucket(9),
-      lists.eleventh_361 |> string.split("\n") |> new_bucket(10)
+      lists.eleventh_361 |> string.split("\n") |> new_bucket(10),
     ])
   let assert Ok(first_bucket) = list.first(buckets)
     as "Tried to get first bucket from list of buckets in init function but the list was empty"
@@ -80,7 +80,8 @@ fn view(model: Model) {
     ui.row([
       ui.label(
         "Estimate: you know "
-          <> int.to_string(neyman_algorithm.estimation(model.buckets)) <> "% of the words in my Anki deck",
+          <> int.to_string(neyman_algorithm.estimation(model.buckets))
+          <> "% of the words in my Anki deck",
         ui.text_colour(model.theme),
       ),
     ]),
@@ -88,7 +89,8 @@ fn view(model: Model) {
     ui.row([
       ui.label(
         "Margin of error: "
-          <> int.to_string(neyman_algorithm.margin_of_error(model.buckets)),
+          <> int.to_string(neyman_algorithm.margin_of_error(model.buckets))
+          <> "%",
         ui.text_colour(model.theme),
       ),
     ]),

@@ -131,7 +131,7 @@ pub fn margin_of_error(buckets: List(Bucket)) -> Int {
   let strata_term = 1.0 /. { k *. k }
   let assert Ok(root_term) = float.square_root(sum_term *. strata_term)
     as "Negative number passed into square root in margin of error formula"
-  let result = 1.96 *. root_term *. float_corpus_size(buckets)
+  let result = 1.96 *. root_term *. 100.0
   float.round(result)
 }
 
